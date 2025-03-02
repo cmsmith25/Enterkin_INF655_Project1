@@ -1,8 +1,8 @@
 import React from 'react';
 
 class UserInfo extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             name: 'Mickey Mouse',
             profession: 'Cartoon Character'
@@ -10,6 +10,7 @@ class UserInfo extends React.Component {
     }
 
     render () {
+        const { handleClick} = this.props;
         const { name, profession } = this.state;
         const randomNumber = Math.floor(Math.random() * 100);
 
@@ -19,6 +20,7 @@ class UserInfo extends React.Component {
                 <p>Name: {this.state.name}</p>
                 <p>Profession: {this.state.profession}</p>
                 <p>Your lucky number today is: {randomNumber}</p>
+                <button onClick={handleClick}>Click me</button>
             </div>
         );
     }
