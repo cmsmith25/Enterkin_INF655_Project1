@@ -1,26 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const TaskForm = () => {
+
+//Builds a task form 
+const TaskForm = ({ addTask }) => {
     const [taskName, setTaskName] = useState('');
+    const [description, setDescription] = useState('');
 
-    const handleSubmit = (event) => {
+    //Will handle form submission
+    const handleSubmission = (event) => {
         event.preventDefault();
-        console.log(taskName);
+        
+
+        //Ensures form entry is not blank
+        if (!taskName.trim() || !description.trim()) {
+            alert("Task name and description fields cannot be empty! Please enter a task name and description!");
+            return;
+        }
+
+        //Creates a new task
+        const newTask = { name: taskName, description };
+
+        addTask(newTask); //Adds the task to App.jsx
+
     };
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Task Name: 
+        return (
+            <form onSubmit={handleSubmission}>
                 <input
-                    type="text"
-                    value={taskName}
-                    onChange={(e) => setTaskName(e.target.value)}
+                type="text"
+                placeholder="Enter a task"
+                value={taskName}
+                onChange={(event) => setTaskName(event.target.value)}
                 />
-            </label>
-            <button type="submit">Submit</button>
-        </form>
-    );
-};
+                <input
+                type="text"
+                placeholder="Enter a description"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+            />
+            <button type="submit">Add Task</button>
+            
+            </form>
+        );
+    };
 
 export default TaskForm;
+

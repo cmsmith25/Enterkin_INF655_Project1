@@ -1,3 +1,4 @@
+//Not being used in midterm
 import React, { useState } from 'react';
 
 const Counter = () => {

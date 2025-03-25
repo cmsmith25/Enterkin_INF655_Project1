@@ -1,8 +1,11 @@
+//Not being used in midterm
 import React from 'react';
 
 
+//Defines the TaskArray component
 function TaskArray() {
     const name = "Mickey";
+    //Defines an array of tasks with properties
     const tasks = [
         {
             id: 1,
@@ -27,11 +30,13 @@ function TaskArray() {
     ];
 
 
-
+//Function to get random task from array
 const getRandomTask = () => {
+//Generates the random task
 const int = Math.floor(Math.random()*4);
 return tasks[int].title;
 };
+//Renders the component's JSX
 return (
     <div className="TaskArray">
         Hello {name} you have a task of: <h3>{getRandomTask()}</h3>
