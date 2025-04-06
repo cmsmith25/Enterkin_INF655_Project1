@@ -16,8 +16,8 @@ const Greeting = ({ username }) => {
 
   //Render component's JSX
   return (
-    <div>
-      <h1>{greeting} {username}!</h1>
+    <div className= "card">
+      <h2>{greeting} {username}!</h2>
       <p>Today's date is: {currentDate}</p>
       <button onClick={changeGreeting}>Change Greeting</button>
     </div>

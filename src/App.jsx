@@ -1,54 +1,34 @@
 import React, { useState } from 'react';
-import UserInfo from './UserInfo';
-import Greeting from './Greeting';
-import Counter from './Counter';//Not being used to midterm
-import TaskComponent from './TaskComponent';
-import TaskForm from './TaskForm';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import About from "./pages/About";
+import Header from "./pages/Header";
+import Footer from "./pages/Footer";
+import NotFound from "./pages/NotFound";
 
-import './App.css'
+import './App.css';
+import SignInForm from './components/SignInForm';
+import { AuthContextProvider } from './components/context/AuthContext';
+import { TaskProvider } from './components/context/TaskContext';
 
-const App = () => {
-  const handleAlert = () => {
-    alert('Button was clicked!');
-  };
-  //State to store tasks
-  const [tasks, setTasks] = useState([
-    { id: 1, name: 'Clean the kitchen' },
-    { id: 2, name: 'Feed the pets' },
-    { id: 3, name: 'Wash the laundry' },
-    { id: 4, name: 'Go grocery shopping' },
-    { id: 5, name: 'Water the plants'}
-  ]);
 
-  //Function to add new task
-  const addTask = (task) => {
-    //Spread operator appends new task to existing list
-    setTasks(previousTasks => [...previousTasks, task]);
-  };
-
-  //Function to delete task
-  const deleteTask = (id) => {
-    //Confirmation window
-    if (window.confirm("Are you sure you want to delete task?")) {
-      setTasks(previousTasks => previousTasks.filter(task => task.id !== id));
-    }
-  };
-
-  //Returns all components 
+export default function App() {
   return (
-    <div>
-      <Greeting username="Mickey" />
-      <br />
-      <UserInfo />
-      <br />
-      <TaskForm addTask={addTask} />
-      <br />
-      <TaskComponent tasks={tasks} deleteTask={deleteTask} />
-    </div>
+   <>
+  <AuthContextProvider>
+    <TaskProvider>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/signin" element={<SignInForm />} />
+          <Route path="/about" element={<About />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
+    </TaskProvider>
+  </AuthContextProvider>
+  </>
   );
-};
-
-
-
-
-export default App;
+}
