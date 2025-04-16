@@ -3,10 +3,9 @@ import TaskForm from './TaskForm';
 
 
 //Creates component to search, sort, edit and delete
-const TaskComponent = ({ tasks, addTask, updateTask, deleteTask }) => {
+const TaskComponent = ({ tasks, addTask, updateTask, deleteTask, checkTask }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortAsc, setSortAsc] = useState(true);
-    const [checkedTasks, setCheckedTasks] = useState({});
     const [editingTask, setEditingTask] = useState(null);
 
 
@@ -27,14 +26,13 @@ const TaskComponent = ({ tasks, addTask, updateTask, deleteTask }) => {
         .sort((a, b) => sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)); //Sorts tasks
 
 
-    const handleSubmit = (values, { resetForm }) => {
+    const handleSubmit = (values) => {
         if (editingTask) {
             updateTask(editingTask.id, values); //If editing update task
             setEditingTask(null); //Reset editing task state
         } else {
             addTask(values); //Add a new task if not editing
         }
-        resetForm();
     ;}
 
     const handleEdit = (task) => {
@@ -52,7 +50,6 @@ const TaskComponent = ({ tasks, addTask, updateTask, deleteTask }) => {
                         description: editingTask ? editingTask.description : '',
                     }}
                     handleSubmit={handleSubmit}
-                    editingTask={editingTask}
                     resetForm={() => setEditingTask(null)}
                     />
             </div>
@@ -71,18 +68,15 @@ const TaskComponent = ({ tasks, addTask, updateTask, deleteTask }) => {
             <div className="tasks-container">
                 {taskFilter.map((task) => (
                     <div key={task.id} className="task-card">
-                        <h3 style={{ textDecoration: checkedTasks[task.id] ? 'line-through' : 'none '}}>
+                        <h3 style={{ textDecoration: task.checked ? 'line-through' : 'none '}}>
                             {task.name}</h3>
                         <p>{task.description}</p>
                         <label>
                             <input
                                 type="checkbox"
-                                checked={checkedTasks[task.id] || false} //Will check if task is checked
-                                onChange={() => setCheckedTasks((prev) => ({
-                                    ...prev, [task.id]: !prev[task.id],
-                                }))
-                            } //Toggle checkbox state for task    
-                                />{''} Task Completed
+                                checked={task.checked}
+                                onChange={() => checkTask(task.id)}   
+                                />Task Completed
                         </label>
 
                         <button onClick={() => {

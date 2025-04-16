@@ -1,44 +1,47 @@
 import React from "react";
-import { Formik, Field, Form } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 
 //Builds a task form 
-const TaskForm = ({ addTask, initialValues = { name: '', description: ''}, editingTask }) => {
-   return (
+const TaskForm = ({ initialValues, onSubmit, resetForm }) => {
+    const validationSchema = Yup.object({
+        name: Yup.string().required('Task name is required'),
+        description: Yup.string().required('Description is required'),
+    });
+
+   
+    return (
     <Formik
         initialValues={initialValues}
-        onSubmit={(values, { resetForm }) => {
-            addTask(values);
-            resetForm();
-        }}
-    >
-        {({ isSubmitting }) => (
+        validationSchema={validationSchema}
+        enableReinitialize
+        onSubmit={(values, actions) => {
+            onSubmit=(values);
+            actions.resetForm();
+            if (resetForm) resetForm();
+            }}
+        >
+        {() => (
             <Form>
                 <div>
-                    <Field
-                        type="text"
-                        name="name"
-                        placeholder="Enter Task Name"
-                        required
-                        />
+                    <label htmlFor="name">Task Name:</label>
+                    <Field name="name" />
+                    <ErrorMessage name="name" component="div" />
                 </div>
+
                 <div>
-                    <Field
-                    type="text"
-                    name="description"
-                    placeholder="Enter Task Description"
-                    required
-                    />
+                    <label htmlFor="description">Description:</label>
+                    <Field name="description" />
+                    <ErrorMessage name="description" comonent="div" />
                 </div>
-                <button type="submit" disabled={isSubmitting}>
-                    {editingTask ? 'Update Task' : 'Add Task'}
-                </button>
-            </Form>
+
+                <button type="submit">Submit</button>
+                </Form>
         )}
-    </Formik>
-   );
-};
-   
+        </Formik>
+    );
+};   
 export default TaskForm;
    
 
