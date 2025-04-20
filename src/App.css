@@ -335,4 +335,16 @@ nav a:hover {
   text-align: right;
 }
 
+.imageContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img{
+  width: 40%;
+  height: auto;
+  border-radius: 4px;
+}
+
 

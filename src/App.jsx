@@ -6,6 +6,7 @@ import Header from "./pages/Header";
 import Footer from "./pages/Footer";
 import NotFound from "./pages/NotFound";
 import TaskRoutes from "./routes/TaskRoutes";
+import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './routes/ProtectedRoute';
 import './App.css';
 import SignInForm from './components/SignInForm';
@@ -35,6 +36,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <About />
+              </ProtectedRoute>
+            }
+            />
+            <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
             />

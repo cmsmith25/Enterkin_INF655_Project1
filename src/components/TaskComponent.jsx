@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import TaskForm from './TaskForm';
+import TaskContext from './context/TaskContext';
 
 
 //Creates component to search, sort, edit and delete
-const TaskComponent = ({ tasks, addTask, updateTask, deleteTask, checkTask }) => {
+const TaskComponent = () => {
+    const {
+        taskList,
+        addTask,
+        updateTask,
+        deleteTask,
+        checkTask,
+    } = useContext(TaskContext);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [sortAsc, setSortAsc] = useState(true);
     const [editingTask, setEditingTask] = useState(null);
-
 
 
     //Will handle input
@@ -21,7 +29,7 @@ const TaskComponent = ({ tasks, addTask, updateTask, deleteTask, checkTask }) =>
     };
 
     //Filters and sorts tasks
-    const taskFilter = tasks
+    const taskFilter = taskList
         .filter(task => task.name.toLowerCase().includes(searchTerm)) //Filters tasks
         .sort((a, b) => sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)); //Sorts tasks
 
@@ -33,7 +41,7 @@ const TaskComponent = ({ tasks, addTask, updateTask, deleteTask, checkTask }) =>
         } else {
             addTask(values); //Add a new task if not editing
         }
-    ;}
+    };
 
     const handleEdit = (task) => {
         setEditingTask(task);
@@ -46,8 +54,8 @@ const TaskComponent = ({ tasks, addTask, updateTask, deleteTask, checkTask }) =>
                 <h2>{editingTask ? 'Edit Task' : 'Add New Task'}</h2>
                 <TaskForm
                     initialValues={{
-                        name: editingTask ? editingTask.name : '',
-                        description: editingTask ? editingTask.description : '',
+                        name: editingTask.name,
+                        description: editingTask.description
                     }}
                     handleSubmit={handleSubmit}
                     resetForm={() => setEditingTask(null)}
@@ -90,7 +98,6 @@ const TaskComponent = ({ tasks, addTask, updateTask, deleteTask, checkTask }) =>
                     </div>
                 ))}
             </div>
-            
         </div>
     );
 };

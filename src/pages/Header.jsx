@@ -27,6 +27,9 @@ export default function Header() {
                     <li>
                         <Link to="/about">About</Link>
                     </li>
+                    <li>
+                        <Link to="/profile">Profile</Link>
+                    </li>
                     {!user ? (
                     <li>
                         <Link to="/signin">Sign In</Link></li>

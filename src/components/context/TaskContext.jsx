@@ -1,61 +1,87 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import { auth, db } from '../../firebase';
 import { v4 as uuidv4 } from 'uuid';
+import {
+    collection,
+    addDoc,
+    onSnapshot,
+    query,
+    where,
+    updateDoc,
+    deleteDoc,
+    doc, 
+    serverTimestamp
+} from 'firebase/firestore';
+import { UserAuth } from './AuthContext';
 
 const TaskContext = createContext();
 
-const TaskData =[];
-
 export const TaskProvider = ({ children }) => {
-    const [taskList, setTaskList] = useState(TaskData);
-    const [taskEdit, setTaskEdit] = useState({
-        task: {},
-        edit: false,
-    });
+    const [taskList, setTaskList] = useState([]);
+    const { user } = UserAuth();
+
+
+    useEffect(() => {
+        if(!user?.uid) return;
+
+        const q = query(collection(db, "tasks"), where("userId", "==", user.uid));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const tasks = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            console.log("Fetched tasks for user:", user.uid, tasks);
+            setTaskList(tasks);
+        });
+    
+        return () => unsubscribe();
+    }, [user]);
+
 
     //Add task
-    const addTask = (newTask) => {
-        newTask.id = uuidv4();
-        newTask.checked = false;
-        setTaskList([newTask, ...taskList]);
+    const addTask = async ({ name, description }) => {
+        try {
+            await addDoc(collection(db, "tasks"), {
+                userId: user.uid,
+                name,
+                description,
+                checked: false,
+                createdAt: serverTimestamp()
+            });
+        } catch (error) {
+            console.error("Failed to add task:", error);
+        }
     };
 
-
-    //Edit task
-    const editTask = (task) => {
-        setTaskEdit({ task, edit: true });
+    const checkTask = async (taskId) => {
+        const taskRef = doc(db, "tasks", taskId);
+        const task = taskList.find(t => t.id === taskId);
+        await updateDoc(taskRef, {
+            checked: !task.checked
+        });
     };
 
-    //Update task
-    const updateTask = (id, updTask) => {
-        setTaskList(
-            taskList.map((task) => (task.id === id ? { ...task, ...updTask } : task))
-        );
+    const updateTask = async (taskId, { name, description }) => {
+        const taskRef = doc(db, "tasks", taskId);
+        await updateDoc(taskRef, {
+            name,
+            description
+        });
     };
 
-    //Delete task
-    const deleteTask =(id) => {
-       setTaskList(taskList.filter((task) => task.id !== id)); 
-    };
-
-    const checkTask = (id) => {
-        setTaskList(
-            taskList.map((task) =>
-            task.id === id ? { ...task, checked: !task.checked } : task)
-        );
+    const deleteTask = async (taskId) => {
+        const taskRef = doc(db, "tasks", taskId);
+        await deleteDoc(taskRef);
     };
 
     return (
-        <TaskContext.Provider 
-            value={{
-                taskList,
-                deleteTask,
-                checkTask,
-                addTask,
-                editTask,
-                updateTask,
-                taskEdit,
-            }}
-        >
+        <TaskContext.Provider value={{
+            taskList,
+            addTask,
+            updateTask,
+            deleteTask,
+            checkTask
+        }}>
             {children}
         </TaskContext.Provider>
     );

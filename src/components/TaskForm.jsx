@@ -1,49 +1,50 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import TaskContext from "./context/TaskContext";
 
 
 //Builds a task form 
-const TaskForm = ({ initialValues, onSubmit, resetForm }) => {
+const TaskForm = () => {
+    const { addTask } = useContext(TaskContext);
+
     const validationSchema = Yup.object({
         name: Yup.string().required('Task name is required'),
         description: Yup.string().required('Description is required'),
     });
+    
 
    
     return (
     <Formik
-        initialValues={initialValues}
+        initialValues={{ name: '', description: ''}}
         validationSchema={validationSchema}
-        enableReinitialize
-        onSubmit={(values, actions) => {
-            onSubmit=(values);
-            actions.resetForm();
-            if (resetForm) resetForm();
+        onSubmit={async (values, { resetForm }) => {
+            await addTask(values);
+            resetForm();
             }}
         >
         {() => (
             <Form>
-                <div>
-                    <label htmlFor="name">Task Name:</label>
-                    <Field name="name" />
-                    <ErrorMessage name="name" component="div" />
-                </div>
+                <label htmlFor="name">Task Name:</label>
+                <Field id="name" name="name" placeholder="Enter task name" />
+                <ErrorMessage name="name" component="div" />
 
-                <div>
-                    <label htmlFor="description">Description:</label>
-                    <Field name="description" />
-                    <ErrorMessage name="description" comonent="div" />
-                </div>
+                <label htmlFor="description">Description:</label>
+                <Field
+                id="description"
+                name="description"
+                placeholder="Enter task description" />
+                <ErrorMessage name="description" component="div" />
 
-                <button type="submit">Submit</button>
+                <button type="submit">Add Task</button>
                 </Form>
         )}
         </Formik>
     );
 };   
+
 export default TaskForm;
-   
 
 
 

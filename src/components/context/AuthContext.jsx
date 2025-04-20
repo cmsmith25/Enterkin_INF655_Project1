@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, } from "react";
 import { auth } from "../../firebase";
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword,
+         onAuthStateChanged,
+         signInWithEmailAndPassword,
+         signOut,
+         updateProfile,
+         updateEmail } from "firebase/auth";
 
 const UserContext = createContext();
 
@@ -12,12 +17,31 @@ const [loading, setLoading] = useState(true);
          return createUserWithEmailAndPassword(auth, email, password);
     };
 
+    const updateUser = async (name, email) => {
+        try {
+            await updateProfile(auth.currentUser, {
+            displayName: name,
+            photoURL: "/images/tiger.png", 
+        });
+
+        await updateEmail(auth.currentUser, email);
+        await auth.currentUser.reload();
+        setUser(auth.currentUser);
+
+        console.log("Updated profile:", auth.currentUser.displayName, auth.currentUser.email);
+        alert("Your Profile is updated");
+    } catch (error) {
+        console.error("Error updating user:", error);
+        alert("Failed to update profile");
+    }
+};
+
     const signIn = (email, password) => {
         return signInWithEmailAndPassword(auth, email, password);
     };
 
     const logout = () => {
-        return signOut(auth)
+        return signOut(auth);
     };
 
     useEffect(() => {
@@ -34,7 +58,7 @@ const [loading, setLoading] = useState(true);
     
     return (
         <UserContext.Provider 
-            value= {{ createUser, signIn, logout, user, loading }}>
+            value= {{ createUser, updateUser, signIn, logout, user, loading }}>
                 {children}
 
         </UserContext.Provider>

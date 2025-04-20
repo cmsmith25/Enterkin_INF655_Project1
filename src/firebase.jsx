@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { getFirestore, collection, addDoc, query, where, getDocs, onSnapshot } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -20,13 +21,36 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-setPersistence(auth, browserLocalPersistence)
-  .then(() => {
-    console.log("Auth persistence is set to local");
-  })
-  .catch((error) => {
-    console.error("Error setting auth persistence:", error);
+setPersistence(auth, browserLocalPersistence);
+
+const addTask = async (userId, taskName, taskDescription) => {
+  try {
+    await addDoc(collection(db,"tasks"), {
+      userId,
+      taskName,
+      taskDescription,
+      createdAt: new Date(),
+    });
+  } catch (e) {
+    console.error("Error adding task", e);
+  }
+};
+
+const getTasksForUser = (userId, setTasks) => {
+  const q = query(collection(db, "tasks"), where("userId", "==", userId));
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const tasks = [];
+    querySnapshot.forEach((doc) => {
+      tasks.push({ id: doc.id, ...doc.data() });
+    });
+    setTasks(tasks);
   });
-export { auth };
+
+  return unsubscribe;
+};
+
+export { auth, db, addTask, getTasksForUser };
+
 
